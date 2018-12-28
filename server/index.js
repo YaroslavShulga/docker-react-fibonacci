@@ -51,7 +51,7 @@ app.get("/values/current", async (req, res) => {
 
 app.post("/values", async (req, res) => {
   const index = req.body.index;
-  
+
   if (index > 40) {
     res.status(422).send("Index to hight");
   }
@@ -61,7 +61,7 @@ app.post("/values", async (req, res) => {
 
   await pgClient.query(`INSERT INTO values (number) VALUES ($1)`, [index]);
 
-  redis.send({ working: true });
+  res.send({ working: true });
 });
 
 app.listen(5000, () => console.log("Server is run"));

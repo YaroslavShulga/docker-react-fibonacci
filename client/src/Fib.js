@@ -8,10 +8,6 @@ class Fib extends Component {
     index: ""
   };
 
-  constructor() {
-    super();
-  }
-
   componentDidMount() {
     this.fetchValues();
     this.fetchIndexes();
