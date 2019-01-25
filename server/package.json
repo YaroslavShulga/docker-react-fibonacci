@@ -10,5 +10,8 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon"
+  },
+  "nodemonConfig": {
+    "legacyWatch": true
   }
 }
