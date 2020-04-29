@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: client-node-port
 spec:
-  type: NodePort
+  type: NodePort # use for exposing port to the outside world
+  selector:
+    component: web #the same key-value map as in Pod labels property
   ports:
     - port: 3050
       targetPort: 3000
       nodePort: 31515 #available from browser window
-  selector:
-    component: web #the same key-value map as in Pod labels property

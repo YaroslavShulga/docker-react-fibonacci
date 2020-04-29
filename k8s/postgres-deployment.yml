@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+#          # @TODO - doesn't have correct user access to the hard drive PVC
+#          volumeMounts:
+#            - name: postgres-storage # the same as in volume section
+#              mountPath: /var/lib/postgresql/data # path where postgres store data
+#              subPath: postgres # postgres specific, sub folder for storing data in PersistentVolume
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword # to create secret run -> kubectl create secret generic pgpassword --from-literal PG_PASSWORD=123132
+                  key: PG_PASSWORD
+            - name: POSTGRES_DB
+              value: postgres

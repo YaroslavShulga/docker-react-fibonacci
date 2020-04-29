@@ -1,0 +1,12 @@
+# PersistentVolumeClaim - it is like advertising billboard
+# attach this claim to Pod, and kubernetis must find instance of storage, like on a hard drive
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce # can be used only by the single node, (ReadOnlyMany, ReadWriteMany)
+  resources:
+    requests:
+      storage: 1Gi
