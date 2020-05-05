@@ -7,6 +7,9 @@ const redisClient = redis.createClient({
   retry_strategy: () => 10000
 });
 
+redisClient.on("connect", () => console.log('Redis connection success!'));
+redisClient.on("error", (err) => console.log(err));
+
 const sub = redisClient.duplicate();
 
 function fib(index) {
@@ -15,7 +18,12 @@ function fib(index) {
 }
 
 sub.on("message", (channel, msg) => {
-  redisClient.hset("values", msg, fib(parseInt(msg)));
+  redisClient.hset("values", msg, fib(parseInt(msg)), (err, res) => {
+    if (err) {
+      throw err;
+    }
+    console.log(`Successfully calculate value for ${msg}`);
+  });
 });
 
 sub.subscribe("insert");

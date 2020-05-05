@@ -1,6 +1,6 @@
 const redis = require("redis");
 const express = require("express");
-const { Pool } = require("pg");
+const {Pool} = require("pg");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
@@ -20,8 +20,11 @@ const pgClient = new Pool({
   user: keys.pgUser,
   password: keys.pgPassword
 });
-
-pgClient.on("error", () => console.log("Connection pg is lost!"));
+pgClient.on('connect', () => console.log("Connection to pg is success!"));
+pgClient.on("error", () => {
+  console.log("Connection pg is lost!");
+  process.exit(-1);
+});
 
 pgClient
   .query("CREATE TABLE IF NOT EXISTS values (number INT)")
@@ -33,6 +36,8 @@ const redisClient = redis.createClient({
   port: keys.redisPort,
   retry_strategy: () => 10000
 });
+redisClient.on("connect", () => console.log('Redis connection success!'));
+redisClient.on("error", (err) => console.log(err));
 
 const redisPublisher = redisClient.duplicate();
 
@@ -53,7 +58,7 @@ app.post("/values", async (req, res) => {
   const index = req.body.index;
 
   if (index > 40) {
-    res.status(422).send("Index to hight");
+    return res.status(422).send("Index to hight");
   }
 
   redisClient.hset("values", index, "Nothing yet");
@@ -61,7 +66,7 @@ app.post("/values", async (req, res) => {
 
   await pgClient.query(`INSERT INTO values (number) VALUES ($1)`, [index]);
 
-  res.send({ working: true });
+  return res.send({working: true});
 });
 
 app.listen(5000, () => console.log("Server is run"));

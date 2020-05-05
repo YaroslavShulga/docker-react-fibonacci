@@ -1,10 +1,25 @@
-version: "3"
+version: "3.0"
+
+networks:
+  default:
+    driver: bridge
+
 services:
   postgres:
     image: "postgres:latest"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - default
+    ports:
+      - "5432:5432"
 
   redis:
     image: "redis:latest"
+    networks:
+      - default
 
   api:
     build:
@@ -16,6 +31,8 @@ services:
     depends_on: 
       - redis
       - postgres
+    networks:
+      - default
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -40,6 +57,8 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+    networks:
+      - default
     volumes:
       - /app/node_modules
       - ./worker:/app
